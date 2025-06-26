@@ -5,14 +5,14 @@ function App() {
   const [newNote, setNewNote] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8000/notes')
+    fetch('https://backend-withered-field-5911.fly.dev/notes')
     .then(response => response.json())
     .then(data => setNotes(data))
     .catch(error => console.error('Error fetching notes:', error));
   }, []);
 
   const handleAddNote = () => {
-    fetch(`http://localhost:8000/notes?content=${encodeURIComponent(newNote)}`, {
+    fetch(`https://backend-withered-field-5911.fly.dev/notes?content=${encodeURIComponent(newNote)}`, {
       method: 'POST',
     })
       .then(response => response.json())
