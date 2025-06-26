@@ -31,6 +31,7 @@ jobs:
       host: localhost
       port: 5432
       db_name: test_db
+      frontend: frontend
 
     defaults:
       run:
