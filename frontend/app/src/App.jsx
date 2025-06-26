@@ -1,18 +1,19 @@
 import {useEffect, useState} from 'react';
+const backendURL = import.meta.env.VITE_BACKEND_URL
 
 function App() {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
 
   useEffect(() => {
-    fetch('https://backend-withered-field-5911.fly.dev/notes')
+    fetch(`${backendURL}/notes`)
     .then(response => response.json())
     .then(data => setNotes(data))
     .catch(error => console.error('Error fetching notes:', error));
   }, []);
 
   const handleAddNote = () => {
-    fetch(`https://backend-withered-field-5911.fly.dev/notes?content=${encodeURIComponent(newNote)}`, {
+    fetch(`${backendURL}/notes?content=${encodeURIComponent(newNote)}`, {
       method: 'POST',
     })
       .then(response => response.json())
