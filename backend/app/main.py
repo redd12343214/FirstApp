@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[f"{frontend}"],  # React ports
+    allow_origins=[f"{os.environ.get('frontend')}"],  # React ports
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
