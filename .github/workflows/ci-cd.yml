@@ -85,7 +85,7 @@ jobs:
         npm run test -- --run
 
   deploy-backend:
-    needs: [backend-tests, frontend-test]
+    needs: [backend-tests, frontend-tests]
 
     runs-on: ubuntu-latest
 
@@ -113,7 +113,7 @@ jobs:
     defaults:
       run:
         working-directory: frontend/app
-        
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
