@@ -63,16 +63,6 @@ jobs:
       run: |
         pytest
 
-    - name: Save FAILURE Status
-      if: ${{ failure() }}
-      run: echo "FAILURE" > build-status.txt
-
-    - name: Upload Build Status Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-status
-        path: build-status.txt
-
   frontend-tests:
     runs-on: ubuntu-latest
 
@@ -96,16 +86,6 @@ jobs:
       run: |
         npm run test -- --run
 
-    - name: Save FAILURE Status
-      if: ${{ failure() }}
-      run: echo "FAILURE" > build-status.txt
-
-    - name: Upload Build Status Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-status
-        path: build-status.txt
-
   upload-build-status:
 
     needs: [backend-tests, frontend-tests]
@@ -113,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
 
     if: always()
-    
+
     steps:
     - name: Save Build Status
       run: |
