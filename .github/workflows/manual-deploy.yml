@@ -17,6 +17,10 @@ jobs:
 
     steps:
 
+      defaults:
+        run:
+          working-directory: /
+
       - name: Try to Download Last Build Status Artifact
         continue-on-error: true
         uses: actions/download-artifact@v4
@@ -45,6 +49,7 @@ jobs:
       - name: Deploy backend to Fly.io
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        working-directory: backend
         run: |
           curl -L https://fly.io/install.sh | sh
           export PATH="$HOME/.fly/bin:$PATH"
