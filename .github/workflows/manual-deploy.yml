@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend
+        working-directory: ./
 
     steps:
       - name: Checkout Code
@@ -28,6 +28,11 @@ jobs:
       - name: Checking for Build Status artifact and Passed Build
         run: |
           echo "Checking for build status... "
+
+          if [ ! -f build-status.txt ]; then
+            echo "Deployment blocked: No build status found!"
+            exit 1
+          fi
 
           if grep -q "FAILURE" build-status.txt; then
             echo "Deployment blocked; Last build failed!"
