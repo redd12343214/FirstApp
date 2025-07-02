@@ -24,6 +24,10 @@ jobs:
           name: build-status
           path: .
 
+      - name: Listing files in directories.
+        run: |
+          ls -laR
+
       - name: Checking for Build Status artifact and Passed Build
         run: |
           echo "Checking for build status... "
