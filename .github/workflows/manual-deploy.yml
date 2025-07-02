@@ -13,13 +13,9 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend
+        working-directory: /
 
     steps:
-
-      defaults:
-        run:
-          working-directory: /
 
       - name: Try to Download Last Build Status Artifact
         continue-on-error: true
