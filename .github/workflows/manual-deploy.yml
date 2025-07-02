@@ -22,6 +22,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-status
+          path: .
 
       - name: Checking for Build Status artifact and Passed Build
         run: |
