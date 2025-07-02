@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./
+        working-directory: backend
 
     steps:
       - name: Checkout Code
@@ -24,10 +24,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-status
-
-      - name: Listing files in directories.
-        run: |
-          find . -name "build-status.txt"
 
       - name: Checking for Build Status artifact and Passed Build
         run: |
