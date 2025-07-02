@@ -1,13 +1,10 @@
-name: CI/CD Pipeline
+name: Build and Test
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
-permissions:
-  contents: write
 
 jobs:
   backend-tests:
@@ -42,7 +39,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -63,6 +60,16 @@ jobs:
     - name: Run backend tests
       run: |
         pytest
+
+    - name: Save FAILURE Status
+      if: ${{ failure() }}
+      run: echo "FAILURE" > build-status.txt
+
+    - name: Upload Build Status Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-status
+        path: build-status.txt
 
   frontend-tests:
     runs-on: ubuntu-latest
@@ -87,57 +94,28 @@ jobs:
       run: |
         npm run test -- --run
 
-  deploy-backend:
-    needs: [backend-tests, frontend-tests ]
+    - name: Save FAILURE Status
+      if: ${{ failure() }}
+      run: echo "FAILURE" > build-status.txt
+
+    - name: Upload Build Status Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-status
+        path: build-status.txt
+
+  upload-build-status:
+    needs: [backend-tests, frontend-tests]
 
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: backend
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Save SUCCESS Status
+      if: ${{ success() }}
+      run: echo "SUCCESS" > build-status.txt
 
-      - name: Deploy backend to Fly.io
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: |
-          curl -L https://fly.io/install.sh | sh
-          export PATH="$HOME/.fly/bin:$PATH"
-          fly deploy --remote-only
-
-  deploy-frontend:
-    needs: deploy-backend
-
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: frontend/app
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install Node dependencies
-        run: npm install
-
-      - name: Build frontend with backend URL
-        env:
-          VITE_BACKEND_URL: https://backend-withered-field-5911.fly.dev
-        run: |
-          echo "VITE_BACKEND_URL=${VITE_BACKEND_URL}" > .env.production
-          npm run build
-
-      - name: Deploy to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: frontend/app/dist
+    - name: Upload Build Status Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-status
+        path: build-status.txt

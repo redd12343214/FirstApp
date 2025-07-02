@@ -1,0 +1,85 @@
+name: Manual Deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-backend:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+
+      - name: Try to Download Last Build Status Artifact
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: build-status
+
+      - name: Checking for Build Status artifact and Passed Build
+        run: |
+          echo "Checking for build status... "
+
+          if [ ! -f build-status.txt ]; then
+            echo "Deployment blocked: No build status found!"
+            exit 1
+          fi
+
+          if grep -q "FAILURE" build-status.txt; then
+            echo "Deployment blocked; Last build failed!"
+            exit 1
+          fi
+
+          echo "Last build PASSED. Proceeding with deployment."
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy backend to Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          curl -L https://fly.io/install.sh | sh
+          export PATH="$HOME/.fly/bin:$PATH"
+          fly deploy --remote-only
+
+  deploy-frontend:
+    needs: deploy-backend
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend/app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build frontend with backend URL
+        env:
+          VITE_BACKEND_URL: https://backend-withered-field-5911.fly.dev
+        run: |
+          echo "VITE_BACKEND_URL=${VITE_BACKEND_URL}" > .env.production
+          npm run build
+
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: frontend/app/dist
