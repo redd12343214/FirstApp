@@ -20,7 +20,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Try to Download Last Build Status Artifact
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: build-status
