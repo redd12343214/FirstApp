@@ -13,20 +13,21 @@ jobs:
 
     defaults:
       run:
-        working-directory: /
+        working-directory: {{ github.workspace }}
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Try to Download Last Build Status Artifact
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: build-status
-          path: .
 
       - name: Listing files in directories.
         run: |
-          ls -laR
+          find . -name "build-status.txt"
 
       - name: Checking for Build Status artifact and Passed Build
         run: |
