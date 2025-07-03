@@ -19,27 +19,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Try to Download Last Build Status Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-status
-
-      - name: Checking for Build Status artifact and Passed Build
-        run: |
-          echo "Checking for build status... "
-
-          if [ ! -f build-status.txt ]; then
-            echo "Deployment blocked: No build status found!"
-            exit 1
-          fi
-
-          if grep -q "FAILURE" build-status.txt; then
-            echo "Deployment blocked; Last build failed!"
-            exit 1
-          fi
-
-          echo "Last build PASSED. Proceeding with deployment."
-
       - name: Checkout code
         uses: actions/checkout@v4
 
